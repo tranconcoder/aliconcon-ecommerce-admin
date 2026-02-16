@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from '../../configs/axios';
+import axios from '../../services/axios.service';
 import { API_URL } from '../../configs/env.config';
 import './ShopApprovals.css';
 

@@ -14,7 +14,7 @@ import {
     FaSortNumericDown
 } from 'react-icons/fa';
 import Cropper from 'react-easy-crop';
-import axiosClient from '../../configs/axios';
+import axiosClient from '../../services/axios.service';
 import { API_URL } from '../../configs/env.config';
 import './Categories.css';
 

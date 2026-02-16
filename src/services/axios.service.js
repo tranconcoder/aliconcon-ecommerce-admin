@@ -1,15 +1,7 @@
 import axios from 'axios';
-import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from './jwt.config';
-import { API_URL } from './env.config';
-
-// Create axios instance
-const axiosClient = axios.create({
-    baseURL: API_URL,
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    timeout: 10000
-});
+import axiosInstance from '../configs/axios.config';
+import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../configs/jwt.config';
+import { API_URL } from '../configs/env.config';
 
 // Authentication token storage
 let accessToken = localStorage.getItem(ACCESS_TOKEN_KEY);
@@ -31,7 +23,7 @@ const onRefreshed = (newToken) => {
 };
 
 // Add request interceptor to attach the token to all requests
-axiosClient.interceptors.request.use(
+axiosInstance.interceptors.request.use(
     (config) => {
         // Skip adding token for auth routes
         const isAuthRoute =
@@ -51,7 +43,7 @@ axiosClient.interceptors.request.use(
 );
 
 // Add response interceptor to handle token refresh
-axiosClient.interceptors.response.use(
+axiosInstance.interceptors.response.use(
     (response) => {
         // Extract data from API response format
         if (response.data && typeof response.data === 'object') {
@@ -71,6 +63,7 @@ axiosClient.interceptors.response.use(
 
                 try {
                     // Call the refresh token endpoint
+                    // Note: We use the base axios here to avoid interceptors loop
                     const response = await axios.post(
                         `${API_URL}/auth/new-token`,
                         {
@@ -92,7 +85,7 @@ axiosClient.interceptors.response.use(
                     refreshToken = newRefreshToken;
 
                     // Update token in axios defaults
-                    axiosClient.defaults.headers.common[
+                    axiosInstance.defaults.headers.common[
                         'Authorization'
                     ] = `Bearer ${newAccessToken}`;
 
@@ -102,16 +95,11 @@ axiosClient.interceptors.response.use(
 
                     // Retry original request with new token
                     originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
-                    return axiosClient(originalRequest);
+                    return axiosInstance(originalRequest);
                 } catch (refreshError) {
                     // If refresh token fails, logout the user
-                    localStorage.removeItem(ACCESS_TOKEN_KEY);
-                    localStorage.removeItem(REFRESH_TOKEN_KEY);
+                    clearAuthTokens();
                     localStorage.removeItem('admin_user');
-
-                    // Clear tokens in memory
-                    accessToken = null;
-                    refreshToken = null;
                     isRefreshing = false;
 
                     // Redirect to login page
@@ -123,7 +111,7 @@ axiosClient.interceptors.response.use(
                 return new Promise((resolve) => {
                     subscribeTokenRefresh((newToken) => {
                         originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-                        resolve(axiosClient(originalRequest));
+                        resolve(axiosInstance(originalRequest));
                     });
                 });
             }
@@ -140,7 +128,7 @@ export const setAuthTokens = (tokens) => {
         refreshToken = tokens.refreshToken;
         localStorage.setItem(ACCESS_TOKEN_KEY, tokens.accessToken);
         localStorage.setItem(REFRESH_TOKEN_KEY, tokens.refreshToken);
-        axiosClient.defaults.headers.common['Authorization'] = `Bearer ${tokens.accessToken}`;
+        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${tokens.accessToken}`;
     }
 };
 
@@ -150,7 +138,7 @@ export const clearAuthTokens = () => {
     refreshToken = null;
     localStorage.removeItem(ACCESS_TOKEN_KEY);
     localStorage.removeItem(REFRESH_TOKEN_KEY);
-    delete axiosClient.defaults.headers.common['Authorization'];
+    delete axiosInstance.defaults.headers.common['Authorization'];
 };
 
-export default axiosClient;
+export default axiosInstance;

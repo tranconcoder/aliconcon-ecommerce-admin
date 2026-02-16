@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from '../../configs/axios';
+import axios from '../../services/axios.service';
 import './ShopDetails.css';
 
 const ShopDetails = () => {

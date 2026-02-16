@@ -14,7 +14,7 @@ import {
     FaCheck,
     FaTimes
 } from 'react-icons/fa';
-import axiosClient from '../../configs/axios';
+import axiosClient from '../../services/axios.service';
 import './Categories.css';
 import { API_URL } from '../../configs/env.config';
 

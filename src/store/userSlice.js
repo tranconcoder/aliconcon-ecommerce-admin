@@ -1,5 +1,5 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axiosClient, { setAuthTokens } from '../configs/axios';
+import axiosClient, { setAuthTokens } from '../services/axios.service';
 import { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY } from '../configs/jwt.config';
 
 // Async thunk for login operation
