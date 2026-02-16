@@ -27,6 +27,32 @@ const CategoriesList = () => {
     const [expandedCategories, setExpandedCategories] = useState({});
     const [actionStatus, setActionStatus] = useState({ message: '', type: '' });
 
+    // Build a hierarchical structure of categories
+    const buildCategoryHierarchy = (categoriesList) => {
+        // First, identify root categories (those without a parent or parent is null/empty)
+        const rootCategories = categoriesList.filter((cat) => !cat.category_parent);
+
+        // Then build the tree recursively
+        return rootCategories.map((rootCat) => {
+            return {
+                ...rootCat,
+                children: getChildCategories(categoriesList, rootCat._id)
+            };
+        });
+    };
+
+    // Get all child categories for a given parent ID
+    const getChildCategories = (categoriesList, parentId) => {
+        const children = categoriesList.filter(
+            (cat) => cat.category_parent && cat.category_parent === parentId
+        );
+
+        return children.map((child) => ({
+            ...child,
+            children: getChildCategories(categoriesList, child._id)
+        }));
+    };
+
     // Fetch categories from the API
     useEffect(() => {
         const fetchCategories = async () => {
@@ -59,33 +85,8 @@ const CategoriesList = () => {
         };
 
         fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
-
-    // Build a hierarchical structure of categories
-    const buildCategoryHierarchy = (categoriesList) => {
-        // First, identify root categories (those without a parent or parent is null/empty)
-        const rootCategories = categoriesList.filter((cat) => !cat.category_parent);
-
-        // Then build the tree recursively
-        return rootCategories.map((rootCat) => {
-            return {
-                ...rootCat,
-                children: getChildCategories(categoriesList, rootCat._id)
-            };
-        });
-    };
-
-    // Get all child categories for a given parent ID
-    const getChildCategories = (categoriesList, parentId) => {
-        const children = categoriesList.filter(
-            (cat) => cat.category_parent && cat.category_parent === parentId
-        );
-
-        return children.map((child) => ({
-            ...child,
-            children: getChildCategories(categoriesList, child._id)
-        }));
-    };
 
     const handleDeleteCategory = async (id) => {
         // This would be a real API call in production

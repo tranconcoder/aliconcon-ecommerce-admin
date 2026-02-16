@@ -135,9 +135,21 @@ const Login = () => {
                                 />
                                 <label htmlFor="remember">Remember me</label>
                             </div>
-                            <a href="#" className="forgot-password">
+                            <button
+                                type="button"
+                                className="forgot-password"
+                                onClick={(e) => e.preventDefault()}
+                                style={{
+                                    background: 'none',
+                                    border: 'none',
+                                    padding: 0,
+                                    font: 'inherit',
+                                    cursor: 'pointer',
+                                    textDecoration: 'underline'
+                                }}
+                            >
                                 Forgot password?
-                            </a>
+                            </button>
                         </div>
 
                         <button type="submit" className="login-button" disabled={isLoading}>

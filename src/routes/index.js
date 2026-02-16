@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 // Redux
-import { selectIsAuthenticated, fetchUserProfile, selectUserLoading } from '../store/userSlice';
+import { selectIsAuthenticated, fetchUserProfile } from '../store/userSlice';
 // Pages
 import Login from '../pages/Login/Login';
 import Dashboard from '../pages/Dashboard/Dashboard';
@@ -35,7 +35,6 @@ const ProtectedRoute = ({ children }) => {
 const AppRoutes = () => {
     const dispatch = useDispatch();
     const isAuthenticated = useSelector(selectIsAuthenticated);
-    const isLoading = useSelector(selectUserLoading);
     const [initialLoadDone, setInitialLoadDone] = useState(false);
 
     // Fetch user profile on app start if authenticated

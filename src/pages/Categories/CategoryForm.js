@@ -4,9 +4,7 @@ import {
     FaSave,
     FaTimes,
     FaSpinner,
-    FaUpload,
     FaImage,
-    FaCrop,
     FaCheck,
     FaTags,
     FaLayerGroup,
@@ -34,7 +32,7 @@ const CategoryForm = () => {
         category_order: 0, // Thêm category_order với giá trị mặc định là 0
         is_active: true // Add is_active field with default value true
     });
-    const [categories, setCategories] = useState([]);
+    // const [categories, setCategories] = useState([]); // Removed unused state
     const [loading, setLoading] = useState(false);
     const [submitting, setSubmitting] = useState(false);
     const [error, setError] = useState(null);
@@ -49,36 +47,6 @@ const CategoryForm = () => {
     const [zoom, setZoom] = useState(1);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState(null);
     const [imageSrc, setImageSrc] = useState('');
-
-    // Fetch all categories for parent dropdown
-    useEffect(() => {
-        const fetchCategories = async () => {
-            try {
-                setLoading(true);
-                const response = await axiosClient.get('/category');
-
-                if (response.metadata && Array.isArray(response.metadata)) {
-                    // Filter out the current category if in edit mode to avoid self-reference
-                    const filteredCategories = isEditMode
-                        ? response.metadata.filter((cat) => cat._id !== id)
-                        : response.metadata;
-
-                    setCategories(filteredCategories);
-
-                    // Build the hierarchy for the dropdown
-                    const hierarchy = buildCategoryHierarchy(filteredCategories);
-                    setCategoriesHierarchy(hierarchy);
-                }
-            } catch (err) {
-                console.error('Error fetching categories:', err);
-                setError('Failed to load categories. Please try again later.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchCategories();
-    }, [id, isEditMode]);
 
     // Build a hierarchical structure of categories
     const buildCategoryHierarchy = (categoriesList) => {
@@ -105,6 +73,37 @@ const CategoryForm = () => {
             children: getChildCategories(categoriesList, child._id)
         }));
     };
+
+    // Fetch all categories for parent dropdown
+    useEffect(() => {
+        const fetchCategories = async () => {
+            try {
+                setLoading(true);
+                const response = await axiosClient.get('/category');
+
+                if (response.metadata && Array.isArray(response.metadata)) {
+                    // Filter out the current category if in edit mode to avoid self-reference
+                    const filteredCategories = isEditMode
+                        ? response.metadata.filter((cat) => cat._id !== id)
+                        : response.metadata;
+
+                    // setCategories(filteredCategories); // Unused state update
+
+                    // Build the hierarchy for the dropdown
+                    const hierarchy = buildCategoryHierarchy(filteredCategories);
+                    setCategoriesHierarchy(hierarchy);
+                }
+            } catch (err) {
+                console.error('Error fetching categories:', err);
+                setError('Failed to load categories. Please try again later.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [id, isEditMode]);
 
     // Recursively render category options with proper indentation
     const renderCategoryOptions = (categories, level = 0) => {
