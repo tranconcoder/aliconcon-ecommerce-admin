@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
-import { selectCurrentUser } from '../../store/userSlice';
 import Sidebar from './Sidebar';
 import './AdminLayout.css';
 
 const AdminLayout = ({ children }) => {
     const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-    const currentUser = useSelector(selectCurrentUser);
+
 
     const toggleSidebar = () => {
         setSidebarCollapsed(!sidebarCollapsed);
