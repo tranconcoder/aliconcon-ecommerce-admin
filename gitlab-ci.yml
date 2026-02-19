@@ -7,17 +7,23 @@ deploy_client_admin:
     - shell
   variables:
     DEPLOY_DIR_PATH: "/var/www/aliconcon-ecommerce_client-admin"
+    CI: "false"
   before_script:
     - source /home/gitlab-runner/.bashrc
-    - rm -rf $DEPLOY_DIR_PATH
-    - mkdir -p $DEPLOY_DIR_PATH
-  
+
   script:
     # Install packages
+    - echo "🚧 Installing dependencies..."
     - bun install
 
     # Handle build project
+    - echo "🔨 Building project..."
     - bun run build
 
-    # Body build folder to $DEPLOY_DIR
-    - cp -r ./build $DEPLOY_DIR_PATH
+    # Deploy (only runs if build succeeds)
+    - echo "🚀 Deploying to $DEPLOY_DIR_PATH..."
+    - rm -rf $DEPLOY_DIR_PATH
+    - mkdir -p $DEPLOY_DIR_PATH
+    - cp -r ./build/* $DEPLOY_DIR_PATH
+
+    - echo "✅ Deployment Complete!"
