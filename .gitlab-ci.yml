@@ -27,3 +27,6 @@ deploy_client_admin:
     - cp -r ./build/* $DEPLOY_DIR_PATH
 
     - echo "✅ Deployment Complete!"
+
+  only:
+    - master
