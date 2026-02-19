@@ -1,0 +1,23 @@
+stages:
+  - deploy_client_admin
+
+deploy_client_admin:
+  stage: deploy_client_admin
+  tags:
+    - shell
+  variables:
+    DEPLOY_DIR_PATH: "/var/www/aliconcon-ecommerce_client-admin"
+  before_script:
+    - source /home/gitlab-runner/.bashrc
+    - rm -rf $DEPLOY_DIR_PATH
+    - mkdir -p $DEPLOY_DIR_PATH
+  
+  script:
+    # Install packages
+    - bun install
+
+    # Handle build project
+    - bun run build
+
+    # Body build folder to $DEPLOY_DIR
+    - cp -r ./build $DEPLOY_DIR_PATH
