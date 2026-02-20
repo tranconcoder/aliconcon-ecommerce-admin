@@ -1,5 +1,14 @@
+include:
+  - project: tvconss/gitlab-tools
+    ref: main
+    file: sync-to-github/.gitlab-ci.yml
+
 stages:
+  - sync-to-github
   - deploy_client_admin
+
+variables:
+  GITHUB_REPO: "aliconcon-ecommerce-admin"
 
 deploy_client_admin:
   stage: deploy_client_admin
