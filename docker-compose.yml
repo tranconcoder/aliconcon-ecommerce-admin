@@ -1,0 +1,11 @@
+services:
+  aliconcon-client-admin:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - REACT_APP_API_URL=${REACT_APP_API_URL}
+    container_name: aliconcon-client-admin
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-3008}:80"

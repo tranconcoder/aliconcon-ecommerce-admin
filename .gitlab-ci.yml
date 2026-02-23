@@ -5,37 +5,32 @@ include:
 
 stages:
   - sync-to-github
-  - deploy_client_admin
+  - build_and_deploy
 
 variables:
   GITHUB_REPO: "aliconcon-ecommerce-admin"
 
 deploy_client_admin:
-  stage: deploy_client_admin
-  tags:
-    - shell
+  stage: build_and_deploy
+  image: docker:latest
   variables:
-    DEPLOY_DIR_PATH: "/var/www/aliconcon-ecommerce_client-admin"
-    CI: "false"
+    DOCKER_HOST: unix:///var/run/docker.sock
+    CONTAINER_NAME: "aliconcon-client-admin"
+    IMAGE_NAME: "aliconcon-client-admin"
+    APP_PORT: 3008
   before_script:
-    - source /home/gitlab-runner/.bashrc
+    - docker info
 
   script:
-    # Install packages
-    - echo "🚧 Installing dependencies..."
-    - bun install
-
-    # Handle build project
-    - echo "🔨 Building project..."
-    - bun run build
-
-    # Deploy (only runs if build succeeds)
-    - echo "🚀 Deploying to $DEPLOY_DIR_PATH..."
-    - rm -rf $DEPLOY_DIR_PATH
-    - mkdir -p $DEPLOY_DIR_PATH
-    - cp -r ./build/* $DEPLOY_DIR_PATH
+    # Build and Run using Docker Compose
+    - echo "🏗️ Building and deploying with Docker Compose..."
+    - docker compose build --build-arg REACT_APP_API_URL=$REACT_APP_API_URL
+    - docker compose up -d
 
     - echo "✅ Deployment Complete!"
 
   only:
     - master
+
+  tags:
+    - docker

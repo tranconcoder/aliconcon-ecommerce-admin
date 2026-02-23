@@ -1,19 +1,23 @@
 # Build stage
-FROM node:18-alpine AS builder
+FROM oven/bun:1 AS builder
 
 WORKDIR /app
 
 # Copy package files
-COPY package.json ./
+COPY package.json bun.lock* ./
+
+# Build arguments
+ARG REACT_APP_API_URL
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
 # Install dependencies
-RUN npm install --force
+RUN bun install --frozen-lockfile
 
 # Copy source code
 COPY . .
 
 # Build the React application
-RUN npm run build
+RUN bun run build
 
 # Production stage with Nginx
 FROM nginx:alpine AS production
